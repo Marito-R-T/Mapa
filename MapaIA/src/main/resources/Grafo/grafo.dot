@@ -1,0 +1,20 @@
+digraph G {
+Quetzaltenango -> San_Marcos;
+San_Marcos -> Xela;
+Xela -> San_Marcos;
+Xela -> P;
+P -> H;
+H -> OS;
+OS -> XELA;
+J -> OS;
+R -> OS;
+R -> TE;
+P -> TE;
+K -> TE;
+M -> K;
+K -> M;
+OS -> TE;
+Y -> TE;
+TE -> Y;
+G -> R;
+}
