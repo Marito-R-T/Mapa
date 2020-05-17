@@ -5,7 +5,7 @@ Xela -> San_Marcos;
 Xela -> P;
 P -> H;
 H -> OS;
-OS -> XELA;
+OS -> Xela;
 J -> OS;
 R -> OS;
 R -> TE;

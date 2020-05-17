@@ -8,6 +8,7 @@ package com.mycompany.mapaia.grafo;
 import com.mycompany.mapaia.ArbolB.ArbolB;
 import com.mycompany.mapaia.ArbolB.Dato;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -17,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,7 +33,7 @@ public class Grafo extends JPanel {
 
     public Grafo() {
         this.setBackground(new Color(193, 174, 188));
-        this.setPreferredSize(new Dimension(550, 500));
+        this.setPreferredSize(new Dimension(990, 945));
         this.setLocation(0, 0);
     }
 
@@ -59,8 +61,8 @@ public class Grafo extends JPanel {
             posicionado.getFlechas().add(a);
             posicionado.getAristas().add(a);
             a.getDestino().getAristas().add(a);
-            posicionado.x = 250;
-            posicionado.y = 300;
+            posicionado.x = 470;
+            posicionado.y = 450;
             a.getDestino().setPosicion(posicionado, (a.getTiempopie() % 25 + 10) * 3);
         }
     }
@@ -101,7 +103,11 @@ public class Grafo extends JPanel {
         this.desmarcarNodos();
         if (i != null && d != null) {
             ArbolB arbol = new ArbolB();
-            i.moverse(d, this, new Dato(0), arbol, tipo);
+            if (tipo.equals("desgaste") || tipo.equals("pie")) {
+                i.moverse(d, this, new Dato(0), arbol, tipo);
+            } else {
+                i.moversef(d, this, new Dato(0), arbol, tipo);
+            }
             return arbol;
         } else {
             return null;
@@ -139,7 +145,6 @@ public class Grafo extends JPanel {
         File file = new File("/home/mari2bar/Documentos/Proyectos/Estructura de Datos/Mapa/MapaIA/src/main/resources/Grafo/grafo.dot");
         if (!file.exists()) {
             try {
-                System.out.println(file.getPath());
                 file.createNewFile();
             } catch (IOException ex) {
                 System.out.println(ex);
@@ -152,7 +157,6 @@ public class Grafo extends JPanel {
             this.desmarcarAristas();
             try (PrintWriter pw = new PrintWriter(new FileWriter(file))) {
                 pw.write(string);
-                System.out.println(string);
                 pw.close();
             }
         } catch (FileNotFoundException ex) {
@@ -164,7 +168,6 @@ public class Grafo extends JPanel {
             File file2 = new File("/home/mari2bar/Documentos/Proyectos/Estructura de Datos/Mapa/MapaIA/src/main/resources/Grafo/grafo.png");
             if (file2.exists()) {
                 if (file2.delete()) {
-                    System.out.println("");
                 }
             }
             ProcessBuilder pbuilder;
@@ -179,30 +182,29 @@ public class Grafo extends JPanel {
             pbuilder.redirectErrorStream(true);
             //Ejecuta el proceso
             pbuilder.start();
-        } catch (Exception e) {
-            e.printStackTrace();
+            Thread.sleep(2000);
+            file2 = new File("/home/mari2bar/Documentos/Proyectos/Estructura de Datos/Mapa/MapaIA/src/main/resources/Grafo/grafo.png");
+            Desktop.getDesktop().open(file2);
+        } catch (IOException | InterruptedException e) {
+            System.out.println(e);
         }
-        ImageIcon icon = new ImageIcon(getClass().getResource("/Grafo/grafo.png"));
-        Image image = icon.getImage().getScaledInstance(500, 500, Image.SCALE_SMOOTH);
-        System.out.println(image.toString());
+    }
+
+    public void ingresarLabel(File file) throws IOException {
+        Image im = ImageIO.read(file).getScaledInstance(990, 945, Image.SCALE_SMOOTH);
+        /*ImageIcon icon = new ImageIcon(getClass().getResource("/Grafo/grafo.png"));
+        Image image = icon.getImage().getScaledInstance(990, 945, Image.SCALE_SMOOTH);*/
+        this.removeAll();
         JLabel label = new JLabel();
-        label.setLocation(10, 10);
-        label.setPreferredSize(new Dimension(500, 500));
-        label.setMinimumSize(new Dimension(500, 500));
-        label.setIcon(new ImageIcon(image));
+        label.setLocation(0, 0);
+        label.setPreferredSize(new Dimension(990, 945));
+        label.setMinimumSize(new Dimension(990, 945));
+        label.setIcon(new ImageIcon(im));
         this.add(label);
     }
 
-    public void ingresarLabel() {
-        ImageIcon icon = new ImageIcon(getClass().getResource("/Grafo/grafo.png"));
-        Image image = icon.getImage().getScaledInstance(550, 500, Image.SCALE_SMOOTH);
-        System.out.println(image.toString());
-        JLabel label = new JLabel();
-        label.setLocation(0, 0);
-        label.setPreferredSize(new Dimension(550, 550));
-        label.setMinimumSize(new Dimension(550, 550));
-        label.setIcon(new ImageIcon(image));
-        this.add(label);
+    public void setPosicionado(Nodo posicionado) {
+        this.posicionado = posicionado;
     }
 
 }

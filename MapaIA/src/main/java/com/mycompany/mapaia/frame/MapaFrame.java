@@ -7,25 +7,30 @@ package com.mycompany.mapaia.frame;
 
 import com.mycompany.mapaia.ArbolB.ArbolB;
 import com.mycompany.mapaia.frame.diseño.Iconos;
+import com.mycompany.mapaia.grafo.Arista;
 import com.mycompany.mapaia.grafo.Grafo;
 import com.mycompany.mapaia.grafo.Nodo;
 import com.mycompany.mapaia.lectorgrafo.Lector;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 
 /**
- * 
+ *
  * @author mari2bar
  */
 public class MapaFrame extends javax.swing.JFrame {
@@ -34,7 +39,7 @@ public class MapaFrame extends javax.swing.JFrame {
      * Creates new form MapaFrame
      */
     private Grafo grafo;
-    
+
     public MapaFrame() {
         JFrame.setDefaultLookAndFeelDecorated(true);
         initComponents();
@@ -61,30 +66,60 @@ public class MapaFrame extends javax.swing.JFrame {
         tabbedArbolB = new javax.swing.JTabbedPane();
         comboCaminar = new javax.swing.JComboBox<>();
         txtDestino = new javax.swing.JTextField();
+        btnPosibilidades = new javax.swing.JButton();
+        btnExportar = new javax.swing.JButton();
+        btnGrafo = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         itemLeer = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         pnlGrafo.setBackground(new java.awt.Color(193, 174, 188));
+        pnlGrafo.setPreferredSize(new java.awt.Dimension(990, 945));
 
         javax.swing.GroupLayout pnlGrafoLayout = new javax.swing.GroupLayout(pnlGrafo);
         pnlGrafo.setLayout(pnlGrafoLayout);
         pnlGrafoLayout.setHorizontalGroup(
             pnlGrafoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 585, Short.MAX_VALUE)
+            .addGap(0, 997, Short.MAX_VALUE)
         );
         pnlGrafoLayout.setVerticalGroup(
             pnlGrafoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 530, Short.MAX_VALUE)
+            .addGap(0, 950, Short.MAX_VALUE)
         );
 
         spGrafo.setViewportView(pnlGrafo);
 
         tabbedArbolB.setTabPlacement(javax.swing.JTabbedPane.RIGHT);
 
-        comboCaminar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboCaminar.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                comboCaminarItemStateChanged(evt);
+            }
+        });
+
+        btnPosibilidades.setText("Buscar Posibilidades");
+        btnPosibilidades.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPosibilidadesActionPerformed(evt);
+            }
+        });
+
+        btnExportar.setText("Exportar ArbolB");
+        btnExportar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportarActionPerformed(evt);
+            }
+        });
+
+        btnGrafo.setText("Exportar Grafo");
+        btnGrafo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGrafoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnlFondoLayout = new javax.swing.GroupLayout(pnlFondo);
         pnlFondo.setLayout(pnlFondoLayout);
@@ -92,26 +127,37 @@ public class MapaFrame extends javax.swing.JFrame {
             pnlFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlFondoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(spGrafo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(spGrafo, javax.swing.GroupLayout.PREFERRED_SIZE, 1000, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnlFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(tabbedArbolB)
-                    .addComponent(comboCaminar, 0, 282, Short.MAX_VALUE)
-                    .addComponent(txtDestino))
+                    .addComponent(tabbedArbolB, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 464, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboCaminar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 464, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFondoLayout.createSequentialGroup()
+                        .addComponent(btnGrafo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnPosibilidades)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnExportar))
+                    .addComponent(txtDestino, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 464, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         pnlFondoLayout.setVerticalGroup(
             pnlFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFondoLayout.createSequentialGroup()
+            .addGroup(pnlFondoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(spGrafo)
+                    .addComponent(spGrafo, javax.swing.GroupLayout.DEFAULT_SIZE, 953, Short.MAX_VALUE)
                     .addGroup(pnlFondoLayout.createSequentialGroup()
                         .addComponent(tabbedArbolB)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(comboCaminar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(pnlFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnExportar, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE)
+                            .addComponent(btnPosibilidades, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnGrafo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
 
@@ -150,40 +196,144 @@ public class MapaFrame extends javax.swing.JFrame {
         //grafo.grafico();
         spGrafo.setViewportView(grafo);
         spGrafo.repaint();
-        BufferedImage bfi = new BufferedImage(550, 550, BufferedImage.TYPE_INT_RGB);
+        hacerImagen();
+
+    }//GEN-LAST:event_itemLeerActionPerformed
+
+    public void hacerImagen() {
+        BufferedImage bfi = new BufferedImage(990, 945, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = bfi.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(new Color(193, 174, 188));
         g2.fillRect(0, 0, this.getWidth(), this.getHeight());
+        grafo.desmarcarNodos();
         grafo.dibujarNodos(g2);
         grafo.desmarcarAristas();
+        grafo.desmarcarNodos();
         g2.dispose();
         File file = new File("/home/mari2bar/Documentos/Proyectos/Estructura de Datos/Mapa/MapaIA/src/main/resources/Grafo/grafo.png");
         file.delete();
         try {
             ImageIO.write(bfi, "png", file);
-            grafo.ingresarLabel();
+            this.posibilidades();
+            this.posicionarSiguientes();
+                //Thread.sleep(2000);
+            grafo.ingresarLabel(file);
             //spGrafo.setViewportView(grafo);
             //spGrafo.repaint();
         } catch (IOException ex) {
             System.out.println(ex);
         }
-    }//GEN-LAST:event_itemLeerActionPerformed
+    }
 
-    public void ingresarPosibilidadesPie(){
-        ArbolB b = grafo.caminosNodo(grafo.getPosicionado(), new Nodo(txtDestino.getText()), "pie");
-        if(b!=null){
-            JPanel nuevo = new JPanel();
-            b.ingresarArbol(nuevo);
-            tabbedArbolB.setComponentAt(0, nuevo);
+    private void btnPosibilidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPosibilidadesActionPerformed
+        // TODO add your handling code here:
+        this.posibilidades();
+    }//GEN-LAST:event_btnPosibilidadesActionPerformed
+
+    public void posibilidades(){
+        switch (tabbedArbolB.getSelectedIndex()) {
+            case 0:
+                ingresarPosibilidadesPie();
+                break;
+            case 1:
+                ingresarPosibilidadesCarro();
+                break;
+            case 2:
+                ingresarPosibilidadesGasolina();
+                break;
+            case 3:
+                ingresarPosibilidadesDesgaste();
+                break;
         }
     }
- 
-    public void ingresarPosibilidadesCarro(){
     
+    private void comboCaminarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboCaminarItemStateChanged
+        // TODO add your handling code here:
+        int i = comboCaminar.getSelectedIndex();
+        if (i > 0) {
+            grafo.setPosicionado(grafo.buscarNodo(new Nodo(comboCaminar.getItemAt(i))));
+            this.hacerImagen();
+            comboCaminar.setSelectedIndex(0);
+        }
+    }//GEN-LAST:event_comboCaminarItemStateChanged
+
+    private void btnExportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarActionPerformed
+        // TODO add your handling code here:
+        ArbolB b = grafo.caminosNodo(grafo.getPosicionado(), new Nodo(txtDestino.getText()), tabbedArbolB.getToolTipTextAt(tabbedArbolB.getSelectedIndex()));
+        b.exportar();
+    }//GEN-LAST:event_btnExportarActionPerformed
+
+    private void btnGrafoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGrafoActionPerformed
+        // TODO add your handling code here:
+        grafo.grafico();
+    }//GEN-LAST:event_btnGrafoActionPerformed
+
+    public void posicionarSiguientes() {
+        comboCaminar.removeAllItems();
+        comboCaminar.addItem("Siguientes");
+        for (Arista arista : grafo.getPosicionado().getAristas()) {
+            if (!arista.getDestino().equals(grafo.getPosicionado())) {
+                comboCaminar.addItem(arista.getDestino().toString());
+            } else if (!arista.getInicio().equals(grafo.getPosicionado())) {
+                comboCaminar.addItem(arista.getInicio().toString());
+            }
+        }
+    }
+
+    public void ingresarPosibilidadesPie() {
+        ArbolB b = grafo.caminosNodo(grafo.getPosicionado(), new Nodo(txtDestino.getText()), "pie");
+        grafo.desmarcarNodos();
+        if (b != null) {
+            JPanel nuevo = new JPanel();
+            JScrollPane sp = new JScrollPane();
+            b.ingresarArbol(nuevo);
+            sp.setViewportView(nuevo);
+            sp.setPreferredSize(new Dimension(282, 390));
+            tabbedArbolB.setComponentAt(0, sp);
+        }
     }
     
+    public void ingresarPosibilidadesGasolina(){
+        ArbolB b = grafo.caminosNodo(grafo.getPosicionado(), new Nodo(txtDestino.getText()), "gasolina");
+        if (b != null) {
+            JPanel nuevo = new JPanel();
+            JScrollPane sp = new JScrollPane();
+            b.ingresarArbol(nuevo);
+            sp.setViewportView(nuevo);
+            sp.setPreferredSize(new Dimension(282, 390));
+            tabbedArbolB.setComponentAt(2, sp);
+        }
+    }
+    
+    public void ingresarPosibilidadesDesgaste(){
+        ArbolB b = grafo.caminosNodo(grafo.getPosicionado(), new Nodo(txtDestino.getText()), "desgaste");
+        if (b != null) {
+            JPanel nuevo = new JPanel();
+            JScrollPane sp = new JScrollPane();
+            b.ingresarArbol(nuevo);
+            sp.setViewportView(nuevo);
+            sp.setPreferredSize(new Dimension(282, 390));
+            tabbedArbolB.setComponentAt(3, sp);
+        }
+    }
+
+    public void ingresarPosibilidadesCarro() {
+        ArbolB b = grafo.caminosNodo(grafo.getPosicionado(), new Nodo(txtDestino.getText()), "carro");
+        if (b != null) {
+            JPanel nuevo = new JPanel();
+            JScrollPane sp = new JScrollPane();
+            b.ingresarArbol(nuevo);
+            sp.setViewportView(nuevo);
+            sp.setPreferredSize(new Dimension(282, 390));
+            tabbedArbolB.setComponentAt(1, sp);
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnExportar;
+    private javax.swing.JButton btnGrafo;
+    private javax.swing.JButton btnPosibilidades;
     private javax.swing.JComboBox<String> comboCaminar;
     private javax.swing.JMenuItem itemLeer;
     private javax.swing.JMenu jMenu1;

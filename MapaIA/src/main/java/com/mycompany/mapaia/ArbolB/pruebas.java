@@ -23,10 +23,7 @@ public class pruebas {
         Lector lector = new Lector();
         Grafo grafo = lector.leerArchivo();
         if (grafo != null) {
-            System.out.println(grafo.buscarNodo(new Nodo("Xela")).getNombre());
             ArbolB b = grafo.caminosNodo(new Nodo("Quetzaltenango"), new Nodo("Xela"), "pie");
-            System.out.println(b.getDatos());
-            System.out.println(b.buscarDato(45));
         }
         /*ArbolB b = new ArbolB();
         b.ingresarDato(10);

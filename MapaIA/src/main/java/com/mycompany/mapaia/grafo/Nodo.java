@@ -30,23 +30,17 @@ public class Nodo {
     }
 
     public void setPosicion(Nodo ref, int pie) {
-        System.out.println(ref.x + "------" + ref.y);
         Random random = new Random();
         int x1 = random.nextInt(pie) + 1;
         int i = (random.nextInt(x1) + 1) * 2;
-        System.out.println("En x = " + x1 + " En i = " + i);
         Double f = Math.sqrt((pie * pie) - ((x1 - i) * (x1 - i)));
-        System.out.println(f);
-        if ((ref.x + (x1 - i) < 10) || (ref.x + (x1 - i) > 500) || (ref.y + f.intValue() > 500) || (ref.y - f.intValue() < 10)) {
-            setPosicion(ref, pie);
+        x = ref.x + (x1 - i);
+        if (random.nextInt(2) == 0) {
+            y = ref.y + f.intValue();
         } else {
-            x = ref.x + (x1 - i);
-            if (random.nextInt(2) == 0) {
-                y = ref.y + f.intValue();
-            } else {
-                y = ref.y - f.intValue();
-            }
+            y = ref.y - f.intValue();
         }
+
     }
 
     public Arista ingresarArista(Arista arista, int entero) {
@@ -103,9 +97,9 @@ public class Nodo {
             a.setMarcada(false);
         }
         for (Arista arista : aristas) {
-            if (!arista.getDestino().equals(this) && arista.getDestino().isMarcado()) {
+            if (!arista.getDestino().equals(this) && arista.isMarcada()) {
                 arista.getDestino().desmarcarAristas(arista);
-            } else if (!arista.getInicio().equals(this) && arista.getInicio().isMarcado()) {
+            } else if (!arista.getInicio().equals(this) && arista.isMarcada()) {
                 arista.getInicio().desmarcarAristas(arista);
             }
         }
@@ -155,19 +149,56 @@ public class Nodo {
         d.getNodo().remove(d.getNodo().size() - 1);
     }
 
+    public void moversef(Nodo f, Grafo grafo, Dato d, ArbolB b, String tipo) {
+        d.getNodo().add(this);
+        if (!this.equals(f)) {
+            this.marcado = true;
+            for (Arista arista1 : flechas) {
+                if (!arista1.getDestino().isMarcado()) {
+                    d.setCarro(d.getCarro() + arista1.getTiempocarro());
+                    d.setPie(d.getPie() + arista1.getTiempopie());
+                    d.setGasolina(d.getGasolina() + arista1.getGasolina());
+                    d.setDesgaste(d.getDesgaste() + arista1.getDesgaste());
+                    arista1.getDestino().moversef(f, grafo, d, b, tipo);
+                    d.setCarro(d.getCarro() - arista1.getTiempocarro());
+                    d.setPie(d.getPie() - arista1.getTiempopie());
+                    d.setGasolina(d.getGasolina() - arista1.getGasolina());
+                    d.setDesgaste(d.getDesgaste() - arista1.getDesgaste());
+                }
+            }
+            this.marcado = false;
+        } else {
+            Dato e = new Dato(d.getNumero() + 1);
+            e.getNodo().addAll(d.getNodo());
+            e.setPie(d.getPie());
+            e.setCarro(d.getCarro());
+            e.setGasolina(d.getGasolina());
+            e.setDesgaste(d.getDesgaste());
+            e.setTipo(tipo);
+            e.setNumero();
+            //agregar dato a Arbol
+            b.ingresarDato(e);
+            //////////////////////
+        }
+        d.getNodo().remove(d.getNodo().size() - 1);
+    }
+
     public void dibujar(Graphics g, Arista a) {
         if (a != null) {
             a.setMarcada(true);
             g.setColor(new Color(133, 99, 96));
             g.drawLine(a.getInicio().x + 5, a.getInicio().y + 5, a.getDestino().x + 5, a.getDestino().y + 5);
             g.setColor(Color.BLACK);
-        } else{
+        } else {
             g.setColor(Color.RED);
         }
-        g.drawOval(this.x, this.y, 10, 10);
-        g.fillOval(this.x, this.y, 10, 10);
-        g.setColor(Color.BLACK);
-        g.drawString(nombre, this.x - (nombre.length()), this.y - 1);
+        if (!this.marcado) {
+            g.drawOval(this.x, this.y, 10, 10);
+            g.fillOval(this.x, this.y, 10, 10);
+            g.setColor(Color.BLACK);
+            g.drawString(nombre, this.x - (nombre.length()), this.y - 1);
+        }
+        this.setMarcado(true);
         for (Arista arista : aristas) {
             if (!arista.getDestino().equals(this) && !arista.isMarcada()) {
                 arista.getDestino().dibujar(g, arista);
@@ -191,6 +222,11 @@ public class Nodo {
             }
         }
         return s;
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 
 }

@@ -5,10 +5,10 @@
  */
 package com.mycompany.mapaia.ArbolB;
 
-import java.awt.Dimension;
-import javax.swing.JLabel;
+import com.mycompany.mapaia.grafo.Nodo;
+import java.awt.Color;
+import java.awt.Font;
 import javax.swing.JPanel;
-import javax.swing.JTree;
 
 /**
  *
@@ -18,6 +18,7 @@ public class Pagina {
 
     protected Dato[] datos = new Dato[4];
     protected Pagina[] paginas = new Pagina[5];
+    public static int numero = 0;
     private int no;
     private int cantidad;
 
@@ -55,11 +56,11 @@ public class Pagina {
         for (int i = 0; i < datos.length; i++) {
             if (datos[i] != null) {
                 if (datos[i].getNumero() >= dato.getNumero()) {
-                    if (paginas[i] == null) {
+                    if (datos[i].getIzquierda() == null) {
                         cantidad++;
                         return this.posicionarDato(dato, i);
                     } else {
-                        Dato p = paginas[i].ingresarDato(dato);
+                        Dato p = datos[i].getIzquierda().ingresarDato(dato);
                         if (p != null) {
                             cantidad++;
                             return this.posicionarDato(p, i);
@@ -68,11 +69,11 @@ public class Pagina {
                         }
                     }
                 } else if ((datos[i].getNumero() < dato.getNumero()) && (i == 3 || datos[i + 1] == null)) {
-                    if (paginas[i + 1] == null) {
+                    if (datos[i].getDerecha() == null) {
                         cantidad++;
                         return this.posicionarDato(dato, i + 1);
                     } else {
-                        Dato p = paginas[i + 1].ingresarDato(dato);
+                        Dato p = datos[i].getDerecha().ingresarDato(dato);
                         if (p != null) {
                             cantidad++;
                             return this.posicionarDato(p, i + 1);
@@ -102,6 +103,12 @@ public class Pagina {
             for (int i = posicion + 1; i < 5; i++) {
                 nuevos[i] = this.datos[i - 1];
             }
+            if (posicion - 1 >= 0 && nuevos[posicion - 1] != null && nuevos[posicion] != nuevos[posicion - 1]) {
+                nuevos[posicion - 1].setDerecha(nuevos[posicion].getIzquierda());
+            }
+            if (posicion + 1 <= 4 && nuevos[posicion + 1] != null && nuevos[posicion] != nuevos[posicion + 1]) {
+                nuevos[posicion + 1].setIzquierda(nuevos[posicion].getDerecha());
+            }
             return crearPagina(nuevos);
         } else {
             if (posicion != 4) {
@@ -127,14 +134,15 @@ public class Pagina {
 
     public Dato crearPagina(Dato datos[]) {
         Dato padre = datos[2];
-        Pagina izquierda = new Pagina(1);
+        Pagina izquierda = new Pagina(Pagina.numero);
         izquierda.getDatos()[0] = datos[0];
         izquierda.getDatos()[1] = datos[1];
         izquierda.getPaginas()[0] = datos[0].getIzquierda();
         izquierda.getPaginas()[1] = datos[0].getDerecha();
         izquierda.getPaginas()[2] = datos[1].getDerecha();
         izquierda.setEntero(2);
-        Pagina derecha = new Pagina(2);
+        Pagina.numero += 1;
+        Pagina derecha = new Pagina(Pagina.numero);
         derecha.getDatos()[0] = datos[3];
         derecha.getDatos()[1] = datos[4];
         derecha.getPaginas()[0] = datos[3].getIzquierda();
@@ -165,30 +173,113 @@ public class Pagina {
     public void setNo(int no) {
         this.no = no;
     }
-    
-    public Dato buscarPrimero(){
-        if(datos[0]!=null && datos[0].getIzquierda()!=null){
+
+    public Dato buscarPrimero() {
+        if (datos[0] != null && datos[0].getIzquierda() != null) {
             return datos[0].getIzquierda().buscarPrimero();
-        } else if(datos[0]==null){
+        } else if (datos[0] == null) {
             return null;
-        } else{
+        } else {
             return datos[0];
         }
     }
-    
-    public void ingresarDato(JPanel tree){
-        for (int i = 0; i < datos.length; i++) {  
-            if(datos[i]!=null){
-                datos[i].getIzquierda().ingresarDato(tree);
-                JLabel label = new JLabel();
-                label.setSize(282, 50);
-                label.setLocation(0, tree.getHeight());
-                tree.setPreferredSize(new Dimension(282, tree.getHeight()+50));
-                if(datos[i+1]==null){
-                    datos[i].getDerecha().ingresarDato(tree);
+
+    public void ingresarDato(JPanel tree, Integer pos) {
+        for (int i = 0; i < datos.length; i++) {
+            if (datos[i] != null) {
+                if (datos[i].getIzquierda() != null) {
+                    datos[i].getIzquierda().ingresarDato(tree, pos);
+                }
+                datos[i].setLocation(0, pos * 50);
+                datos[i].setBackground(Color.black);
+                datos[i].setForeground(Color.WHITE);
+                datos[i].setFont(new Font(Font.SANS_SERIF, Font.CENTER_BASELINE, 14));
+                datos[i].setOpaque(true);
+                String ruta ="";
+                for (Nodo nodo : datos[i].getNodo()) {
+                    ruta+= nodo.getNombre()+"-";
+                }
+                if (datos[i].getNodo().size() >= 2) {
+                    datos[i].setText("   " + ".-   " + ruta + "--" + datos[i].getNumero());
+                } else {
+                    datos[i].setText("  .-   Ha Llegado!!");
+                }
+                tree.add(datos[i]);
+                pos += 1;
+                if (datos[i] != null && datos[i].getDerecha() != null && (i + 1 >= 4 || datos[i + 1] == null)) {
+                    datos[i].getDerecha().ingresarDato(tree, pos);
                 }
             }
         }
+        tree.setBackground(Color.white);
+    }
+
+    public String exportar() {
+        int[] contador = new int[6];
+        contador[0] = ArbolB.contador;
+        String s = "node" + ArbolB.contador + "[label = \"" + escribirNodos() + " \"];\n";
+        int j = 0;
+        for (int i = 0; i < datos.length; i++) {
+            if (datos[i] != null && datos[i].getIzquierda() != null) {
+                ArbolB.sumarContador();
+                contador[i + 1] = ArbolB.contador;
+                s += datos[i].getIzquierda().exportar();
+                j++;
+                if (i + 1 >= 4 || datos[i + 1] == null) {
+                    ArbolB.sumarContador();
+                    contador[i + 2] = ArbolB.contador;
+                    s += datos[i].getDerecha().exportar();
+                    j++;
+                }
+            }
+        }
+        s += escribirFlechas(contador);
+        return s;
+    }
+
+    public String escribirNodos() {
+        String s = "";
+        for (int i = 0; i < datos.length; i++) {
+            if (datos[i] != null) {
+                s += "<f" + i * 2 + "> |";
+                String ruta ="";
+                for (Nodo nodo : datos[i].getNodo()) {
+                    ruta+= nodo.getNombre()+"-";
+                }
+                if(datos[i].getNodo().size()>=2){
+                s += "<f" + ((i * 2) + 1) + "> " + ruta + datos[i].getNumero() + "|";
+                }else{
+                    s += "<f" + ((i * 2) + 1) + "> Ha llegado |";
+                }
+                if (i + 1 >= 4 || datos[i + 1] == null) {
+                    s += "<f" + ((i * 2) + 2) + ">";
+                }
+            }
+        }
+        return s;
+    }
+
+    public String escribirFlechas(int[] num) {
+        String s = "";
+        for (int i = 0; i < datos.length; i++) {
+            if (datos[i] != null && datos[i].getIzquierda() != null) {
+                s += "\"node" + num[0] + "\":f" + (i * 2) + " -> \"node" + num[i + 1] + "\":f" + (datos[i].getIzquierda().getCantidad()) + ";\n";
+                if (i + 1 >= 4 || datos[i + 1] == null) {
+                    s += "\"node" + num[0] + "\":f" + ((i * 2) + 2) + " -> \"node" + num[i + 2] + "\":f" + (datos[i].getDerecha().getCantidad()) + ";\n";
+                }
+            }
+        }
+        return s;
+    }
+
+    public int getCantidad() {
+        int d = 0;
+        for (Dato dato : datos) {
+            if (dato != null) {
+                d++;
+            }
+        }
+        return d;
     }
 
 }

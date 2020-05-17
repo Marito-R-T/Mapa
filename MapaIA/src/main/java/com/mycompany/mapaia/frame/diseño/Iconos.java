@@ -32,10 +32,10 @@ public class Iconos {
         sp2.setViewportView(panel2);
         sp3.setViewportView(panel3);
         sp3.setViewportView(panel4);
-        tabbed.addTab("", new ImageIcon(ima1), sp1, "Pie");
-        tabbed.addTab("", new ImageIcon(ima2), sp2, "Carro");
-        tabbed.addTab("", new ImageIcon(ima3), sp3, "Gasolina");
-        tabbed.addTab("", new ImageIcon(ima4), sp4, "Desgaste");
+        tabbed.addTab("", new ImageIcon(ima1), sp1, "pie");
+        tabbed.addTab("", new ImageIcon(ima2), sp2, "carro");
+        tabbed.addTab("", new ImageIcon(ima3), sp3, "gasolina");
+        tabbed.addTab("", new ImageIcon(ima4), sp4, "desgaste");
     }
     
 }

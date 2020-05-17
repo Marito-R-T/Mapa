@@ -6,13 +6,15 @@
 package com.mycompany.mapaia.ArbolB;
 
 import com.mycompany.mapaia.grafo.Nodo;
+import java.awt.Dimension;
 import java.util.ArrayList;
+import javax.swing.JLabel;
 
 /**
  *
  * @author mari2bar
  */
-public class Dato {
+public class Dato extends JLabel{
     
     private int numero, pie, desgaste, carro, gasolina;
     private Pagina izquierda, derecha;
@@ -20,6 +22,7 @@ public class Dato {
     private String Tipo;
     
     public Dato(int numero){
+        this.setPreferredSize(new Dimension(450, 50));
         this.numero = numero;
     }
 
